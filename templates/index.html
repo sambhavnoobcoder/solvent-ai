@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor-Patient Conversation Transcriber</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        button { margin: 5px; padding: 10px; }
+        #transcript, #summary {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 20px;
+            height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Doctor-Patient Conversation Transcriber</h1>
+    <button id="startBtn">Start Transcription</button>
+    <button id="stopBtn">Stop Transcription</button>
+    <button id="switchBtn">Switch Speaker</button>
+    <button id="summaryBtn">Generate Summary</button>
+
+    <h2>Transcript:</h2>
+    <div id="transcript"></div>
+
+    <h2>Summary:</h2>
+    <div id="summary"></div>
+
+    <script>
+        $(document).ready(function() {
+            function updateTranscript() {
+                $.get('/get_transcript', function(data) {
+                    $('#transcript').text(data.transcript);
+                });
+            }
+
+            $('#startBtn').click(function() {
+                $.post('/start_transcription', function(data) {
+                    alert(data.status);
+                    setInterval(updateTranscript, 5000); // Update transcript every 5 seconds
+                });
+            });
+
+            $('#stopBtn').click(function() {
+                $.post('/stop_transcription', function(data) {
+                    alert(data.status);
+                });
+            });
+
+            $('#switchBtn').click(function() {
+                $.post('/switch_speaker', function(data) {
+                    alert(data.status);
+                });
+            });
+
+            $('#summaryBtn').click(function() {
+                $.post('/generate_summary', function(data) {
+                    if (data.summary) {
+                        $('#summary').text(data.summary);
+                    } else {
+                        alert('Error generating summary: ' + data.error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
